@@ -1,5 +1,10 @@
-// const { prefix, token } = require('./config.json')
-const { prefix, token } = require('./config-qa.json')
+require('dotenv').config();
+
+const isDev = process.env.NODE_ENV === 'development'
+
+const token = isDev ? process.env.TOKEN_DEV : process.env.TOKEN
+const prefix = isDev === 'development' ? "$" : "!"
+
 const Discord = require('discord.js');
 const fs = require('fs');
 
@@ -17,6 +22,9 @@ client.login(token);
 
 client.on('ready', () => {
     console.info(`Logged in as ${client.user.tag}!`);
+    if(isDev) {
+        console.info(`DEV MODE ON`)
+    }
 });
 
 client.on('message', msg => {

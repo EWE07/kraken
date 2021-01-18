@@ -27,7 +27,7 @@ function process(message, args, client) {
                 if(args.length === 1) {
                     let userRoles = [...guild.members.cache.get(msg.author.id).roles.cache.keys()]
                     switch(args[0]) {
-                        case '--move' && userRoles.includes(MEN_ROLE_ID):
+                        case '--automove' && userRoles.includes(MEN_ROLE_ID):
                             textChannel.send("Moving the Hentai watchers in 5 seconds");
                             setTimeout(() =>{
                                 moveUsers(teamTwo)
