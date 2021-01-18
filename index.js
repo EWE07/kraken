@@ -1,4 +1,5 @@
-const { prefix, token } = require('./config.json')
+// const { prefix, token } = require('./config.json')
+const { prefix, token } = require('./config-qa.json')
 const Discord = require('discord.js');
 const fs = require('fs');
 
@@ -16,7 +17,7 @@ client.login(token);
 
 client.on('ready', () => {
     console.info(`Logged in as ${client.user.tag}!`);
-})
+});
 
 client.on('message', msg => {
     if(!msg.content.startsWith(prefix) || msg.author.bot) return;

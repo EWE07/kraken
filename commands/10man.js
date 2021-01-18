@@ -1,6 +1,6 @@
-const { HARRISON, HARRISON_GIF, GUILD_ID, CHANNELS } = require('../constants')
+const { HARRISON, HARRISON_GIF, GUILD_ID, CHANNELS, MEN_ROLE_ID } = require('../constants')
 
-function process(message, client) {
+function process(message, args, client) {
     switch(message.author.id) {
         case HARRISON:
             message.channel.send(HARRISON_GIF);
@@ -11,42 +11,64 @@ function process(message, client) {
                 const voiceChannel = guild.channels.cache.get(CHANNELS['TOKYO']);
                 const textChannel = guild.channels.cache.get(CHANNELS['TEN_MEN']);
 
-                let roster = [];
-
+                let roster = []
                 voiceChannel.members.forEach(member => {
-                    if (member.nickname == null) {
-                        roster.push(member.displayName);
-                    } else {
-                        roster.push(member.nickname);
-                    }
+                    roster.push(member);
                 });
 
                 const shuffled = shuffle(roster);
-
                 const half = Math.ceil(shuffled.length / 2);
-                const firstHalf = shuffled.splice(0, half);
-                const secondHalf = shuffled.splice(-half);
+                const teamOne = shuffled.splice(0, half);
+                const teamTwo = shuffled.splice(-half);
 
-                let message = "**These are the users currently in Tokyo:** \n" + roster.join('\n');
-                textChannel.send(message)
+                announce(textChannel, teamOne);
+                announce(textChannel, teamTwo);
 
-                let firstTeamMsg = "**FIRST TEAM IS: **\n" + firstHalf.join('\n');
-                textChannel.send(firstTeamMsg);
-
-                let secondTeamMsg = "**SECOND TEAM IS: **\n" + secondHalf.join('\n');
-                textChannel.send(secondTeamMsg);
+                if(args.length === 1) {
+                    let userRoles = [...guild.members.cache.get(msg.author.id).roles.cache.keys()]
+                    switch(args[0]) {
+                        case '--move' && userRoles.includes(MEN_ROLE_ID):
+                            textChannel.send("Moving the Hentai watchers in 5 seconds");
+                            setTimeout(() =>{
+                                moveUsers(teamTwo)
+                            }, 5000);
+                            break;
+                        default:
+                            textChannel.send("There was an error trying to execute that command. Either you passed an invalid flag, or you are not a men.");
+                            break;
+                    }
+                }
             })
     }
+}
+
+function announce(channel, team) {
+    let teamMembers = [];
+    team.forEach(member => {
+        if (member.nickname == null) {
+            teamMembers.push(member.displayName);
+        } else {
+            teamMembers.push(member.nickname);
+        }
+    })
+
+    let message = "**TEAM:**\n" + teamMembers.join('\n');
+    channel.send(message);
+}
+
+
+function moveUsers(users) {
+    users.forEach(user => {
+        user.voice.setChannel(CHANNELS['HENTAI'])
+    })
 }
 
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
     while (0 !== currentIndex) {
-  
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
-
       temporaryValue = array[currentIndex];
       array[currentIndex] = array[randomIndex];
       array[randomIndex] = temporaryValue;
@@ -59,6 +81,6 @@ module.exports = {
     name: '10man',
     description: 'Randomizes users present in a voice channel into two separate teams',
     execute(message, args, client) {
-        process(message, client);
+        process(message, args, client);
     }
 }
