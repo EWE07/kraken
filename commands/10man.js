@@ -28,10 +28,10 @@ function process(message, args, client) {
                     let userRoles = [...guild.members.cache.get(msg.author.id).roles.cache.keys()]
                     switch(args[0]) {
                         case '--automove' && userRoles.includes(MEN_ROLE_ID):
-                            textChannel.send("Moving team 2 in 5 seconds");
+                            textChannel.send("Moving team 2 in 15 seconds");
                             setTimeout(() =>{
                                 moveUsers(teamTwo)
-                            }, 5000);
+                            }, 15000);
                             break;
                         default:
                             textChannel.send("There was an error trying to execute that command. Either you passed an invalid flag, or you are not a men.");
