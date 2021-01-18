@@ -7,6 +7,7 @@ const prefix = isDev === 'development' ? "$" : "!"
 
 const Discord = require('discord.js');
 const fs = require('fs');
+const FSUtils = require('./utils/fs.utils');
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -25,6 +26,10 @@ client.on('ready', () => {
     if(isDev) {
         console.info(`DEV MODE ON`)
     }
+
+    let test = new FSUtils();
+    // test.writeRequester('234')
+    console.log(test.getRequester());
 });
 
 client.on('message', msg => {
