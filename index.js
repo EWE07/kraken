@@ -3,7 +3,7 @@ require('dotenv').config();
 const isDev = process.env.NODE_ENV === 'development'
 
 const token = isDev ? process.env.TOKEN_DEV : process.env.TOKEN
-const prefix = isDev === 'development' ? "$" : "!"
+const prefix = isDev ? "$" : "!"
 
 const Discord = require('discord.js');
 const fs = require('fs');
