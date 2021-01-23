@@ -11,6 +11,21 @@ function process(message, args, client) {
                 const voiceChannel = guild.channels.cache.get(CHANNELS['TOKYO']);
                 const textChannel = guild.channels.cache.get(CHANNELS['TEN_MEN']);
 
+                let automove = false;
+
+                if(args.length === 1) {
+                    let userRoles = [...guild.members.cache.get(message.author.id).roles.cache.keys()]
+                    if(args[0] === '--automove') {
+                        if(userRoles.includes(MEN_ROLE_ID)) {
+                            automove = true;
+                        } else {
+                            textChannel.send("MEN role needed for automove. Only rolling teams.")
+                        }
+                    } else {
+                        textChannel.send("Invalid argument. Only rolling teams")
+                    }
+                }
+
                 let roster = []
                 voiceChannel.members.forEach(member => {
                     roster.push(member);
@@ -24,16 +39,13 @@ function process(message, args, client) {
                 announce(textChannel, teamOne);
                 announce(textChannel, teamTwo);
 
-                if(args.length === 1) {
-                    let userRoles = [...guild.members.cache.get(message.author.id).roles.cache.keys()]
-                    if (args[0] === '--automove' && userRoles.includes(MEN_ROLE_ID)) {
-                        textChannel.send("Moving team 2 in 5 seconds");
-                        setTimeout(() =>{
-                            moveUsers(teamTwo)
-                        }, 5000);
-                    }
-                }
-            })
+                if(automove) {
+                    textChannel.send("Moving team 2 in 5 seconds");
+                    setTimeout(() =>{
+                        moveUsers(teamTwo)
+                    }, 5000);
+                }                        
+            });
     }
 }
 
@@ -50,7 +62,6 @@ function announce(channel, team) {
     let message = "**TEAM:**\n" + teamMembers.join('\n');
     channel.send(message);
 }
-
 
 function moveUsers(users) {
     users.forEach(user => {
