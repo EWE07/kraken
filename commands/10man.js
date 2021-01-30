@@ -1,4 +1,4 @@
-const { HARRISON, HARRISON_GIF, GUILD_ID, CHANNELS, MEN_ROLE_ID } = require('../constants')
+const { HARRISON, HARRISON_GIF, GUILD_DETAILS } = require('../constants')
 
 function process(message, args, client) {
     switch(message.author.id) {
@@ -6,46 +6,46 @@ function process(message, args, client) {
             message.channel.send(HARRISON_GIF);
             break;
         default:
-            client.guilds.fetch(GUILD_ID)
-            .then(guild => {
-                const voiceChannel = guild.channels.cache.get(CHANNELS['TOKYO']);
-                const textChannel = guild.channels.cache.get(CHANNELS['TEN_MEN']);
+            const guild = message.guild;
 
-                let automove = false;
+            const guildDetails = GUILD_DETAILS[guild.id];
+            const voiceChannel = guild.channels.cache.get(guildDetails['VOICE_CHANNEL']);
+            const textChannel = guild.channels.cache.get(guildDetails['TEXT_CHANNEL']);
 
-                if(args.length === 1) {
-                    let userRoles = [...guild.members.cache.get(message.author.id).roles.cache.keys()]
+            let automove = false;
+
+            if(args.length === 1) {
+                let userRoles = [...guild.members.cache.get(message.author.id).roles.cache.keys()]
                     if(args[0] === '--automove') {
-                        if(userRoles.includes(MEN_ROLE_ID)) {
+                        if(userRoles.includes(guildDetails["IS_ABLE_TO_MOVE"])) {
                             automove = true;
                         } else {
-                            textChannel.send("MEN role needed for automove. Only rolling teams.")
+                            textChannel.send("Specific role needed for automove. Only rolling teams.")
                         }
                     } else {
                         textChannel.send("Invalid argument. Only rolling teams")
                     }
-                }
+            }
 
-                let roster = []
-                voiceChannel.members.forEach(member => {
-                    roster.push(member);
-                });
-
-                const shuffled = shuffle(roster);
-                const half = Math.ceil(shuffled.length / 2);
-                const teamOne = shuffled.splice(0, half);
-                const teamTwo = shuffled.splice(-half);
-
-                announce(textChannel, teamOne);
-                announce(textChannel, teamTwo);
-
-                if(automove) {
-                    textChannel.send("Moving team 2 in 5 seconds");
-                    setTimeout(() =>{
-                        moveUsers(teamTwo)
-                    }, 5000);
-                }                        
+            let roster = []
+            voiceChannel.members.forEach(member => {
+                roster.push(member);
             });
+
+            const shuffled = shuffle(roster);
+            const half = Math.ceil(shuffled.length / 2);
+            const teamOne = shuffled.splice(0, half);
+            const teamTwo = shuffled.splice(-half);
+
+            announce(textChannel, teamOne);
+            announce(textChannel, teamTwo);
+
+            if(automove) {
+                textChannel.send("Moving team 2 in 15 seconds");
+                setTimeout(() =>{
+                    moveUsers(teamTwo, guildDetails["OTHER_VOICE_CHANNEL"])
+                }, 15000);
+            }                        
     }
 }
 
@@ -63,9 +63,9 @@ function announce(channel, team) {
     channel.send(message);
 }
 
-function moveUsers(users) {
+function moveUsers(users, channel) {
     users.forEach(user => {
-        user.voice.setChannel(CHANNELS['OTHER_VOICE_CHANNEL'])
+        user.voice.setChannel(channel)
     })
 }
 
