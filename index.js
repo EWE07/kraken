@@ -28,16 +28,15 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    console.log(msg.guild.id);
-    // if(!msg.content.startsWith(prefix) || msg.author.bot) return;
+    if(!msg.content.startsWith(prefix) || msg.author.bot) return;
 
-    // const args = msg.content.slice(prefix.length).trim().split(/ +/);
-    // const cmd = args.shift().toLowerCase();
+    const args = msg.content.slice(prefix.length).trim().split(/ +/);
+    const cmd = args.shift().toLowerCase();
 
-    // try {
-    //     client.commands.get(cmd).execute(msg, args, client);
-    // } catch (error) {
-    //     console.error(error);
-    //     message.reply('There was an error trying to execute that command!');
-    // }
+    try {
+        client.commands.get(cmd).execute(msg, args, client);
+    } catch (error) {
+        console.error(error);
+        message.reply('There was an error trying to execute that command!');
+    }
 });
