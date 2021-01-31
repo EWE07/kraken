@@ -5,7 +5,7 @@ function process(message, args, client) {
     const roleID = guild.roles.cache.find(role => role.name === args[0])
     
     if(guild == SAVAJS) {
-        if(!ROLE_BLACKLIST.includes(roleID)) {
+        if(ROLE_BLACKLIST.includes(roleID)) {
             message.channel.send("This role is restricted from being removed from any user");
         } else {
             const memberID = message.author.id;
