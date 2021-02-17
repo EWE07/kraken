@@ -25,6 +25,13 @@ client.on('ready', () => {
     if(isDev) {
         console.info(`DEV MODE ON`)
     }
+
+    let data = require('./output.json')
+    
+    const sortable = Object.fromEntries(
+        Object.entries(data).sort(([,a],[,b]) => b-a)
+    )
+    console.log(sortable)
 });
 
 client.on('message', msg => {
@@ -40,3 +47,39 @@ client.on('message', msg => {
         message.reply('There was an error trying to execute that command!');
     }
 });
+
+// async function getEmojiCount() {
+//     const tokyo = client.channels.cache.get("272239610992525312");
+//     let last_id;
+//     let emojiDict = {};
+
+//     const regex = /(<(.*?)>)/gm
+
+//     while(true) {
+//         let options = { limit: 100 };
+
+//         if(last_id) {
+//             options.before = last_id;
+//         }
+
+//         const messages = await tokyo.messages.fetch(options)
+//         messages.forEach(message => {
+//             const msg = message.content;
+//             let emojiStrings = msg.match(regex);
+
+//             for(emojiString in emojiStrings) {
+//                 const emoji = emojiStrings[emojiString].split(":"[1])
+//                 emojiDict[emoji] = (emojiDict[emoji] || 0) + 1;
+//             }
+//         })
+
+//         last_id = messages.last().id;
+
+//         if(messages.createdTimestamp < 1604203200) {
+//             break;
+//         }
+
+//         console.log(emojiDict)
+//     }
+//     return emojiDict
+// }

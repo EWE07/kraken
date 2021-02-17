@@ -13,7 +13,7 @@ const GAMES = {
 
 function process(message, args, client) {
     if(message.author.id == "129673348618649600") {
-        message.channel.send("Fuck you, make your own decisions")
+        message.channel.send("Make your own decisions")
     } else {
         switch(args[0]) {
             case "game":
