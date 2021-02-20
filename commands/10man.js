@@ -31,16 +31,15 @@ function process(message, args, client) {
             voiceChannel.members.forEach(member => {
                 roster.push(member);
             });
+        
 
             const shuffled = shuffle(roster);
             const half = Math.ceil(shuffled.length / 2);
-            const teamOne = shuffled.splice(0, half);
-            const teamTwo = shuffled.splice(-half);
 
-            announce(textChannel, teamOne);
-            announce(textChannel, teamTwo);
+            announce(textChannel, shuffled);
 
             if(automove) {
+                const teamTwo = shuffled.splice(-half);
                 textChannel.send("Moving team 2 in 15 seconds");
                 setTimeout(() =>{
                     moveUsers(teamTwo, guildDetails["OTHER_VOICE_CHANNEL"])
@@ -49,18 +48,40 @@ function process(message, args, client) {
     }
 }
 
-function announce(channel, team) {
+function announce(channel, teams) {
     let teamMembers = [];
-    team.forEach(member => {
+    
+    teams.forEach(member => {
         if (member.nickname == null) {
             teamMembers.push(member.displayName);
         } else {
             teamMembers.push(member.nickname);
         }
     })
+    
+    const half = Math.ceil(teamMembers.length / 2);
+    const teamOne = teamMembers.splice(0, half).join('\n');
+    const teamTwo = teamMembers.splice(-half).join('\n');
 
-    let message = "**TEAM:**\n" + teamMembers.join('\n');
-    channel.send(message);
+    const embed = {
+        "title": "Randomly Generated Teams",
+        "description": "For all your ten men needs",
+        "color": 7303028,
+        "fields": [
+        {
+            "name": "Team 1",
+            "value": teamOne,
+            "inline": true
+        },
+        {
+            "name": "Team 2",
+            "value": teamTwo,
+            "inline": true
+        }
+        ]
+    };
+
+    channel.send({embed});
 }
 
 function moveUsers(users, channel) {

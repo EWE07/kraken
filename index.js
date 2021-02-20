@@ -5,6 +5,7 @@ const isDev = process.env.NODE_ENV === 'development'
 const token = isDev ? process.env.TOKEN_DEV : process.env.TOKEN
 const prefix = isDev ? "$" : "!"
 
+const { Console } = require('console');
 const Discord = require('discord.js');
 const fs = require('fs');
 
@@ -37,6 +38,6 @@ client.on('message', msg => {
         client.commands.get(cmd).execute(msg, args, client);
     } catch (error) {
         console.error(error);
-        message.reply('There was an error trying to execute that command!');
+        msg.reply('There was an error trying to execute that command!');
     }
 });
