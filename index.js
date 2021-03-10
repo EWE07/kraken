@@ -54,7 +54,7 @@ client.on('message', msg => {
 });
 
 function isJustinCapping(msg){
-    const justin = "217024547378036736";
+    const justin = "211307111039238144";
     const cap = "good morning everyone";
 
     if(msg.author.id == justin && msg.content.toLowerCase().includes(cap)) {
