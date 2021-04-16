@@ -38,7 +38,7 @@ function getBalance() {
 
 function updateBalance(balance) {
     const data = JSON.stringify(balance);
-    fs.writeFile('../data.balance.json', data, err => {
+    fs.writeFile('./data.balance.json', data, err => {
         if(err) {
             console.log("Error writing file: ", err)
         } else {
