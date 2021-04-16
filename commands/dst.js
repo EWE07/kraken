@@ -1,6 +1,13 @@
+let acceptableUsers = [
+    "217024547378036736",
+    "183025406335516672"
+]
+
 var fs = require('fs')
 
 function process(message, args, client) {
+    if(!acceptableUsers.includes(message.author.id)) return;
+
     let data = getBalance();
     switch(args[0]) {
         case "--balance":
@@ -8,12 +15,16 @@ function process(message, args, client) {
             message.channel.send(response)
             break;
         case "--increment":
-            data['balance'] = data.balance + 1;
+            if(isNaN(args[1])) return;
+
+            data['balance'] = data.balance + parseFloat(args[1]);
             updateBalance(data)
             message.channel.send(`New balance: ${data.balance}`)
             break;
         case "--decrement":
-            data['balance'] = data.balance - 1;
+            if(isNaN(args[1])) return;
+
+            data['balance'] = data.balance - parseFloat(args[1]);
             updateBalance(data)
             message.channel.send(`New balance: ${data.balance}`)
             break;
