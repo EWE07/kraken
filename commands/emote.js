@@ -5,16 +5,16 @@ function process(message, args, client) {
     let queryString
     switch(args[0]) {
         case "--e":
-            queryString = 'select emoji as col1, count(*) as cnt from dbo.events group by 1 order by 2 desc limit 10;'
+            queryString = 'select emoji as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc limit 20;'
             break;
         case "--u":
-            queryString = 'select CONCAT("<@", userId, ">") as col1, count(*) as cnt from dbo.events group by 1 order by 2 desc limit 10;'
+            queryString = 'select CONCAT("<@", userId, ">") as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc;'
             break;
         case "--epd":
-            queryString = "with data as (select date(convert_tz(from_unixtime(timestamp / 1000), 'UTC', 'EST')) as col1, count(*) as cnt from dbo.events group by 1 order by 1 desc limit 14) select cast(col1 as char) as col1, cnt from data;"
+            queryString = 'with data as (select date(convert_tz(from_unixtime(timestamp / 1000), "UTC", "EST")) as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 1 desc limit 14) select cast(col1 as char) as col1, col2, col3 from data order by 2 desc, 3 desc;'
             break;
         case "--c":
-            queryString = "select channel as col1, count(*) as cnt from dbo.events group by 1 order by 2 desc limit 10;"
+            queryString = 'select channel as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc;'
             break;
         default:
             break;
@@ -25,20 +25,38 @@ function process(message, args, client) {
         if(err) throw err;
         con.query(queryString, function(error, result, fields) {
             
-            let data = []
+            let users = [];
+            let reactions = [];
+            let messages = [];
+
             result.forEach(row => {
-                data.push(`${row.col1}: ${row.cnt}`)  
+                users.push(row.col1);
+                reactions.push(row.col2);
+                messages.push(row.col3);
             })
             
-            let top5 = data.join('\n');
+            let userValues = users.join('\n');
+            let reactionValues = reactions.join('\n');
+            let messageValues = messages.join('\n')
 
             const embed = {
                 "title": "Emote Leaderboards",
                 "color": 7303028,
                 "fields": [
                 {
-                    "name": "Results",
-                    "value": top5
+                    "name": "User",
+                    "value": userValues,
+                    "inline": true
+                },
+                {
+                    "name": "Reactions",
+                    "value": reactionValues,
+                    "inline": true
+                },
+                {
+                    "name": "Messages",
+                    "value": messageValues,
+                    "inline": true
                 }
                 ]
             };
