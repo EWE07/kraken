@@ -11,7 +11,7 @@ function process(message, args, client) {
             queryString = 'select CONCAT("<@", userId, ">") as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc;'
             break;
         case "--epd":
-            queryString = 'with data as (select date(convert_tz(from_unixtime(timestamp / 1000), "UTC", "EST")) as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 1 desc limit 14) select cast(col1 as char) as col1, col2, col3 from data order by 2 desc, 3 desc;'
+            queryString = 'with data as (select date(convert_tz(from_unixtime(timestamp / 1000), "UTC", "EST")) as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 1 desc limit 14) select cast(col1 as char) as col1, col2 as "reaction", col3 as "text" from data order by 1 desc;'
             break;
         case "--c":
             queryString = 'select channel as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc;'
