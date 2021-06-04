@@ -49,8 +49,6 @@ client.on('message', msg => {
         console.error(error);
         msg.reply('There was an error trying to execute that command!');
     }
-    
-
 });
 
 function isJustinCapping(msg){

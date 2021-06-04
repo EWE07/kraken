@@ -16,6 +16,30 @@ function process(message, args, client) {
         case "--c":
             queryString = 'select channel as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc;'
             break;
+        case "--ebu":
+            let emote = args[1];
+            let emojis = [];
+            message.guild.emojis.cache.forEach(emoji => {
+                let emojiString = `<:${emoji.name}:${emoji.id}>`
+                emojis.push(emojiString)
+            });
+
+            let orderBy;
+            switch(args[2]) {
+                case "-r":
+                    orderBy = 'col2';
+                    break;
+                case "-m":
+                    orderBy = 'col3';
+                    break;
+                default:
+                    break;
+            }
+
+            if(emojis.includes(emote)) {
+                queryString = `select CONCAT("<@", userId, ">") as col1, sum(case when emoji = '${emote}' and type = 'reaction' then 1 else 0 end) as col2, sum(case when emoji = '${emote}' and type = 'text' then 1 else 0 end) as col3 from dbo.events group by 1 order by ${orderBy} desc limit 10;`
+                break;
+            }
         default:
             break;
     }
@@ -24,7 +48,6 @@ function process(message, args, client) {
     con.connect(function(err) {
         if(err) throw err;
         con.query(queryString, function(error, result, fields) {
-            
             let users = [];
             let reactions = [];
             let messages = [];
