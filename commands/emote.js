@@ -2,7 +2,8 @@ const mysql = require('mysql');
 const config = require('../config');
 
 function process(message, args, client) {
-    let queryString
+    let queryString;
+    let orderBy;
     switch(args[0]) {
         case "--e":
             queryString = 'select emoji as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc limit 20;'
@@ -16,15 +17,10 @@ function process(message, args, client) {
         case "--c":
             queryString = 'select channel as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc;'
             break;
-        case "--ebu":
-            let emote = args[1];
-            let emojis = [];
-            message.guild.emojis.cache.forEach(emoji => {
-                let emojiString = `<:${emoji.name}:${emoji.id}>`
-                emojis.push(emojiString)
-            });
+        case "--user":
+            let user = args[1].replace(/[^0-9]/g, "");
+            let users = [...message.guild.members.cache.keys()];
 
-            let orderBy;
             switch(args[2]) {
                 case "-r":
                     orderBy = 'col2';
@@ -34,7 +30,29 @@ function process(message, args, client) {
                     break;
                 default:
                     break;
+            } 
+            if(users.includes(user)) {
+                queryString = `select emoji as col1, sum(case when type = 'reaction' then 1 else 0 end) as col2, sum(case when type = 'text' then 1 else 0 end) as col3 from dbo.events where userId = ${user} group by 1 order by ${orderBy} desc limit 10;`
             }
+            break;
+        case "--ube":
+            let emote = args[1];
+            let emojis = [];
+            message.guild.emojis.cache.forEach(emoji => {
+                let emojiString = `<:${emoji.name}:${emoji.id}>`
+                emojis.push(emojiString)
+            });
+
+            switch(args[2]) {
+                case "-r":
+                    orderBy = 'col2';
+                    break;
+                case "-m":
+                    orderBy = 'col3';
+                    break;
+                default:
+                    break;
+            }     
 
             if(emojis.includes(emote)) {
                 queryString = `select CONCAT("<@", userId, ">") as col1, sum(case when emoji = '${emote}' and type = 'reaction' then 1 else 0 end) as col2, sum(case when emoji = '${emote}' and type = 'text' then 1 else 0 end) as col3 from dbo.events group by 1 order by ${orderBy} desc limit 10;`
@@ -67,7 +85,7 @@ function process(message, args, client) {
                 "color": 7303028,
                 "fields": [
                 {
-                    "name": "User",
+                    "name": "Name",
                     "value": userValues,
                     "inline": true
                 },
