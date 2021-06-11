@@ -6,7 +6,7 @@ function process(message, args, client) {
     let orderBy;
     switch(args[0]) {
         case "--e":
-            queryString = 'select emoji as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc limit 20;'
+            queryString = 'select emoji as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc limit 10;'
             break;
         case "--u":
             queryString = 'select CONCAT("<@", userId, ">") as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 2 desc, 3 desc;'
@@ -58,6 +58,20 @@ function process(message, args, client) {
                 queryString = `select CONCAT("<@", userId, ">") as col1, sum(case when emoji = '${emote}' and type = 'reaction' then 1 else 0 end) as col2, sum(case when emoji = '${emote}' and type = 'text' then 1 else 0 end) as col3 from dbo.events group by 1 order by ${orderBy} desc limit 10;`
                 break;
             }
+            break;
+        case "--cull":
+            switch(args[1]) {
+                case "-r":
+                    orderBy = 'col2';
+                    break;
+                case "-m":
+                    orderBy = 'col3';
+                    break;
+                default:
+                    break;
+            }
+            queryString = `with emotes as (select emote from dbo.emotes) select emoji as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events where emoji in (select emote from emotes) group by 1 order by ${orderBy} asc limit 25;`
+            break;
         default:
             break;
     }
@@ -78,7 +92,7 @@ function process(message, args, client) {
             
             let userValues = users.join('\n');
             let reactionValues = reactions.join('\n');
-            let messageValues = messages.join('\n')
+            let messageValues = messages.join('\n');
 
             const embed = {
                 "title": "Emote Leaderboards",
