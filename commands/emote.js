@@ -9,11 +9,22 @@ function process(message, args, client) {
 
     switch(args[1]) {
         case '-s':
+        case '-kpi':
+        case '-okr':
             const metric = args[2];
+            const alreadySorted = metric === "epd"
+
             arrangement = metric === 'leu' ? 'asc' : 'desc';
-            queryString = `${METRIC_QUERIES[metric]} order by ${ordering} ${arrangement} limit 25`;
+
+            queryString = METRIC_QUERIES[metric]
+            if(alreadySorted) {
+                break;
+            } else {
+                queryString += ` order by ${ordering} ${arrangement} limit 25;`;
+            }
             break;
         case '-u':
+        case '--user':
             const user = args[2].replace(/[^0-9]/g, ""); // Stripping down to numeric characters for compatibility with SQL data\
             const users = [...message.guild.members.cache.keys()];
 
@@ -22,6 +33,7 @@ function process(message, args, client) {
             }
             break;
         case '-e':
+        case '--emote':
             const emote = args[2]; 
             let emotes = [];
             message.guild.emojis.cache.forEach(emote => {

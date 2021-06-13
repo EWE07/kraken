@@ -10,10 +10,12 @@ function process(message, args, client) {
 
     let data = getBalance();
     switch(args[0]) {
+        case "-b":
         case "--balance":
             let response = `${data.balance} hours`
             message.channel.send(response)
             break;
+        case "-i":
         case "--increment":
             if(isNaN(args[1])) return;
 
@@ -21,6 +23,7 @@ function process(message, args, client) {
             updateBalance(data)
             message.channel.send(`New balance: ${data.balance}`)
             break;
+        case "-d":
         case "--decrement":
             if(isNaN(args[1])) return;
 
