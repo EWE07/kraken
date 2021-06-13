@@ -16,7 +16,7 @@ function process(message, args, client) {
 
             if(args.length === 1) {
                 let userRoles = [...guild.members.cache.get(message.author.id).roles.cache.keys()]
-                    if(args[0] === '--automove') {
+                    if(args[0] === '-a') {
                         if(userRoles.includes(guildDetails["IS_ABLE_TO_MOVE"])) {
                             automove = true;
                         } else {
