@@ -25,11 +25,31 @@ const ROLE_BLACKLIST = [
 const HARRISON = "725070170422378577";
 const HARRISON_GIF = 'https://tenor.com/sQvN.gif';
 
+const METRIC_QUERIES = {
+    'teu': 'select emoji as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1',
+    'uea': 'select CONCAT("<@", userId, ">") as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1',
+    'epd': 'with data as (select date(convert_tz(from_unixtime(timestamp / 1000), "UTC", "EST")) as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1 order by 1 desc limit 14) select cast(col1 as char) as col1, col2, col3 from data',
+    'cea': 'select channel as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events group by 1',
+    'leu': 'with emotes as (select emote from dbo.emotes) select emoji as col1, sum(case when type = "reaction" then 1 else 0 end) as col2, sum(case when type = "text" then 1 else 0 end) as col3 from dbo.events where emoji in (select emote from emotes) group by 1'
+}
+
+const USER_QUERY = "select emoji as col1, sum(case when type = 'reaction' then 1 else 0 end) as col2, sum(case when type = 'text' then 1 else 0 end) as col3 from dbo.events";
+const EMOTE_QUERY = `select CONCAT("<@", userId, ">") as col1, sum(case when emoji = (select value from emote) and type = 'reaction' then 1 else 0 end) as col2, sum(case when emoji = (select value from emote) and type = 'text' then 1 else 0 end) as col3 from dbo.events group by 1`
+
+const ORDER = {
+    '-r': 'col2',
+    '-m': 'col3'
+};
+
 module.exports = {
     TOKYO: TOKYO,
     SAVAJS: SAVAJS,
     GUILD_DETAILS: GUILD_DETAILS,
     HARRISON: HARRISON,
     HARRISON_GIF: HARRISON_GIF,
-    ROLE_BLACKLIST: ROLE_BLACKLIST
+    ROLE_BLACKLIST: ROLE_BLACKLIST,
+    METRIC_QUERIES: METRIC_QUERIES,
+    USER_QUERY: USER_QUERY,
+    EMOTE_QUERY: EMOTE_QUERY,
+    ORDER: ORDER
 }
