@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+require('./ExtendedMessage')
+
 const isDev = process.env.NODE_ENV === 'development'
 
 const token = isDev ? process.env.TOKEN_DEV : process.env.TOKEN
@@ -8,7 +10,12 @@ const prefix = isDev ? "$" : "!"
 const Discord = require('discord.js');
 const fs = require('fs');
 
-const client = new Discord.Client();
+const client = new Discord.Client({
+    allowedMentions: {
+        repliedUser: true
+    }
+});
+
 client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -83,7 +90,7 @@ function spoilerize(msg) {
         const book = msg.content.split(' ')[1];
         const chapter = Number(msg.content.split(' ')[2]);
     
-        if(isNaN(chapter) || !Object.keys(books).includes(book)) {
+        if(isNaN(chapter) || !Object.keys(books).includes(book) || msg.reference) {
             msg.delete().then(msg => {
                 msg.channel.send(`<@${msg.author.id}>, please provide book and chapter numbers with your message.`);
                 return;
@@ -96,4 +103,13 @@ function spoilerize(msg) {
             return;
         });
     }
+    
+    if(msg.reference) {
+        let response = `<@${msg.author.id}> said: || ${msg.content} ||`;
+        msg.delete().then(msg => {
+            msg.channel.messages.fetch(msg.reference.messageID).then(parentMsg => {
+                parentMsg.inlineReply(response);
+            })
+        })
+    } 
 }
