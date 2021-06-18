@@ -83,7 +83,7 @@ function spoilerize(msg) {
         const book = msg.content.split(' ')[1];
         const chapter = Number(msg.content.split(' ')[2]);
     
-        if(isNaN(chapter) || !Object.keys(books).includes(book) || msg.reference) {
+        if(isNaN(chapter) || !Object.keys(books).includes(book)) {
             msg.delete().then(msg => {
                 msg.channel.send(`<@${msg.author.id}>, please provide book and chapter numbers with your message.`);
                 return;
@@ -96,13 +96,4 @@ function spoilerize(msg) {
             return;
         });
     }
-    
-    if(msg.reference) {
-        let response = `<@${msg.author.id}> said: || ${msg.content} ||`;
-        msg.delete().then(msg => {
-            msg.channel.messages.fetch(msg.reference.messageID).then(parentMsg => {
-                parentMsg.reply(response);
-            })
-        })
-    } 
 }
