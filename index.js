@@ -90,7 +90,7 @@ function spoilerize(msg) {
             });
         }
 
-        let response = `<@${msg.author.id}> (${books[book]} | Chapter ${chapter}) said: || ${msg.content.replace('spoiler ').substring(4)} ||`;
+        let response = `<@${msg.author.id}> (${books[book]} | Chapter ${chapter}) said: || ${msg.content.replace('spoiler ','').substring(4)} ||`;
         msg.delete().then(msg => {
             msg.channel.send(response);
             return;
