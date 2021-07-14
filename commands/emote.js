@@ -43,7 +43,6 @@ function process(message, args, client) {
 
             if(emotes.includes(emote)) {
                 queryString = `with emote as (select '${emote}' as value) ${EMOTE_QUERY} order by ${ordering} ${arrangement} limit 25;`
-                console.log(queryString)
                 break;
             }
             break;
