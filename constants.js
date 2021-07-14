@@ -34,7 +34,7 @@ const METRIC_QUERIES = {
 }
 
 const USER_QUERY = "with emotes as (select emote from dbo.emotes) select emoji as col1, sum(case when type = 'reaction' then 1 else 0 end) as col2, sum(case when type = 'text' then 1 else 0 end) as col3 from dbo.events where emoji in (select emote from emotes)";
-const EMOTE_QUERY = `with emotes as (select emote from dbo.emotes) select CONCAT("<@", userId, ">") as col1, sum(case when emoji = (select value from emote) and type = 'reaction' then 1 else 0 end) as col2, sum(case when emoji = (select value from emote) and type = 'text' then 1 else 0 end) as col3 from dbo.events where emoji in (select emote from emotes) group by 1`
+const EMOTE_QUERY = `select CONCAT("<@", userId, ">") as col1, sum(case when emoji = (select value from emote) and type = 'reaction' then 1 else 0 end) as col2, sum(case when emoji = (select value from emote) and type = 'text' then 1 else 0 end) as col3 from dbo.events where emoji in (select emote from dbo.emotes) group by 1`
 
 const ORDER = {
     '-r': 'col2',
