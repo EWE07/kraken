@@ -65,9 +65,9 @@ function sendSignal(msg) {
     options = {}
 
     if(msg.mentions.roles.has('819028004880515073')) {
-        options['files'] = ['./data/val.png']
+        options['files'] = ['./images/val.png']
     } else {
-        options['files'] = ['./data/aram.png']
+        options['files'] = ['./images/aram.png']
     }
 
     msg.reply(options)
