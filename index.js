@@ -39,12 +39,11 @@ client.on('message', msg => {
         spoilerize(msg);
         return;
     }
-    const capAlert = isJustinCapping(msg);
-    if(capAlert) {
-        msg.react('🇸');
-        msg.react('💲');
-        return;
+
+    if(msg.mentions.roles.has('819028004880515073') || msg.mentions.roles.has('875854854680100914')) {
+        sendSignal(msg)
     }
+
     if(!msg.content.startsWith(prefix) || msg.author.bot) return;
 
     const args = msg.content.slice(prefix.length).trim().split(/ +/);
@@ -62,15 +61,16 @@ client.on('message', msg => {
     }
 });
 
-function isJustinCapping(msg){
-    const justin = "211307111039238144";
-    const cap = "good morning everyone";
+function sendSignal(msg) {
+    options = {}
 
-    if(msg.author.id == justin && msg.content.toLowerCase().includes(cap)) {
-        return true;
+    if(msg.mentions.roles.has('819028004880515073')) {
+        options['files'] = ['./data/val.png']
     } else {
-        return false;
+        options['files'] = ['./data/aram.png']
     }
+
+    msg.reply(options)
 }
 
 const books = {
