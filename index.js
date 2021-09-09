@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-require('./ExtendedMessage')
-
 const isDev = process.env.NODE_ENV === 'development'
 
 const token = isDev ? process.env.TOKEN_DEV : process.env.TOKEN
@@ -35,11 +33,6 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-    if(msg.channel.id === "855286466367062026") {
-        spoilerize(msg);
-        return;
-    }
-
     if(msg.mentions.roles.has('819028004880515073') || msg.mentions.roles.has('875854854680100914')) {
         sendSignal(msg)
     }
@@ -71,45 +64,4 @@ function sendSignal(msg) {
     }
 
     msg.reply(options)
-}
-
-const books = {
-    1: "Red Rising",
-    2: "Golden Son",
-    3: "Morning Star",
-    4: "Iron Gold",
-    5: "Dark Age"
-}
-
-function spoilerize(msg) {
-    if(msg.author.bot) {
-        return;
-    }
-
-    if(msg.content.toLowerCase().startsWith('spoiler')) {
-        const book = msg.content.split(' ')[1];
-        const chapter = Number(msg.content.split(' ')[2]);
-    
-        if(isNaN(chapter) || !Object.keys(books).includes(book) || msg.reference) {
-            msg.delete().then(msg => {
-                msg.channel.send(`<@${msg.author.id}>, please provide book and chapter numbers with your message.`);
-                return;
-            });
-        }
-
-        let response = `<@${msg.author.id}> (${books[book]} | Chapter ${chapter}) said: || ${msg.content.replace('spoiler ','').substring(4)} ||`;
-        msg.delete().then(msg => {
-            msg.channel.send(response);
-            return;
-        });
-    }
-    
-    if(msg.reference) {
-        let response = `<@${msg.author.id}> said: || ${msg.content} ||`;
-        msg.delete().then(msg => {
-            msg.channel.messages.fetch(msg.reference.messageID).then(parentMsg => {
-                parentMsg.inlineReply(response);
-            })
-        })
-    } 
 }
