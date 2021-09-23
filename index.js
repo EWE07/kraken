@@ -35,6 +35,7 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+    if(message.channel.type === "DM") return
     if(msg.channel.id === "855286466367062026") {
         spoilerize(msg);
         return;
@@ -82,10 +83,8 @@ const books = {
 }
 
 function spoilerize(msg) {
-    if(msg.author.bot) {
-        return;
-    }
-
+    if(msg.author.bot) return;
+    
     if(msg.content.toLowerCase().startsWith('spoiler')) {
         const book = msg.content.split(' ')[1];
         const chapter = Number(msg.content.split(' ')[2]);
